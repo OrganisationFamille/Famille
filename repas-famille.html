@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Table d'Honneur — Repas de Famille</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Raleway:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:          #f0ebe0;
+      --parchment:   #faf6ee;
+      --card:        #ffffff;
+      --dark:        #1b2a18;       /* vert forêt profond, signature Lenôtre */
+      --dark2:       #243521;
+      --dark3:       #2f4329;
+      --gold:        #b5892a;
+      --gold-l:      #d4a83c;
+      --gold-dim:    rgba(181,137,42,0.18);
+      --gold-border: rgba(181,137,42,0.28);
+      --text:        #1e1c16;
+      --text-dim:    rgba(30,28,22,0.52);
+      --text-muted:  rgba(30,28,22,0.28);
+      --green-chip:  #3a6b3f;
+      --rule:        rgba(181,137,42,0.22);
+      --shadow-sm:   0 2px 12px rgba(30,28,22,0.08);
+      --shadow-md:   0 4px 28px rgba(30,28,22,0.12);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg);
+      background-image:
+        radial-gradient(ellipse 100% 50% at 50% 0%, rgba(181,137,42,0.05) 0%, transparent 60%);
+      color: var(--text);
+      font-family: 'Raleway', sans-serif;
+      font-weight: 300;
+      min-height: 100vh;
+      padding-bottom: 120px;
+    }
+
+    /* ══════════════════════════════════
+       HEADER  (sombre, style Lenôtre)
+    ══════════════════════════════════ */
+    header {
+      background-color: var(--dark);
+      background-image:
+        linear-gradient(135deg, #111d0e 0%, var(--dark) 50%, var(--dark2) 100%);
+      color: #ede8dc;
+      text-align: center;
+      padding: 44px 24px 36px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    header::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(to right, transparent, var(--gold), transparent);
+    }
+
+    .h-ornament {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .h-line {
+      height: 1px;
+      width: 64px;
+      background: linear-gradient(to right, transparent, rgba(181,137,42,0.55));
+    }
+    .h-line.r { background: linear-gradient(to left, transparent, rgba(181,137,42,0.55)); }
+    .h-diamond {
+      width: 7px; height: 7px;
+      background: var(--gold);
+      transform: rotate(45deg);
+      opacity: 0.75;
+    }
+
+    header h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-weight: 300;
+      font-size: 2.7rem;
+      letter-spacing: 0.07em;
+      color: #f0ebe0;
+      line-height: 1;
+    }
+
+    header .h-sub {
+      margin-top: 9px;
+      font-size: 0.59rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gold);
+      opacity: 0.8;
+    }
+
+    /* ══════════════════════════════════
+       CONTAINER
+    ══════════════════════════════════ */
+    .container {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 10px 16px;
+    }
+
+    /* ══════════════════════════════════
+       SECTION LABELS
+    ══════════════════════════════════ */
+    .section-label {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 32px 0 13px;
+    }
+    .sl-badge {
+      background: var(--dark);
+      color: var(--gold-l);
+      font-size: 0.57rem;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      padding: 5px 13px;
+      border-radius: 1px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .sl-rule {
+      flex: 1;
+      height: 1px;
+      background: var(--rule);
+    }
+    .section-label.ds .sl-badge {
+      background: #3a2810;
+      color: #d4a83c;
+    }
+    .section-label.ds .sl-rule { background: rgba(181,137,42,0.15); }
+
+    /* ══════════════════════════════════
+       FAMILY CARD
+    ══════════════════════════════════ */
+    .family-card {
+      background: var(--card);
+      border-radius: 3px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 10px;
+      overflow: hidden;
+      border: 1px solid rgba(30,28,22,0.07);
+      transition: box-shadow 0.22s;
+    }
+    .family-card:hover { box-shadow: var(--shadow-md); }
+    .family-card.family-off { opacity: 0.5; box-shadow: none; }
+
+    /* ── Card header strip (dark, Lenôtre-style) */
+    .family-header {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      padding: 13px 18px;
+      background: var(--dark);
+      cursor: pointer;
+      user-select: none;
+      position: relative;
+      transition: background 0.2s;
+    }
+    .family-card.mode-dessert .family-header { background: #2e1e0e; }
+    .family-header:hover { background: var(--dark2); }
+    .family-card.mode-dessert .family-header:hover { background: #3a2610; }
+
+    /* On/Off toggle */
+    .fam-toggle {
+      width: 34px; height: 19px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 10px;
+      position: relative;
+      flex-shrink: 0;
+      cursor: pointer;
+      transition: all 0.22s;
+    }
+    .fam-toggle.on {
+      background: rgba(181,137,42,0.35);
+      border-color: var(--gold);
+    }
+    .fam-toggle::after {
+      content: '';
+      width: 13px; height: 13px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.35);
+      position: absolute;
+      top: 2px; left: 2px;
+      transition: all 0.22s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    }
+    .fam-toggle.on::after { left: 17px; background: var(--gold); }
+
+    /* Family name */
+    .fam-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 1.22rem;
+      font-weight: 400;
+      color: #f0ebe0;
+      flex: 1;
+      letter-spacing: 0.03em;
+    }
+    .family-off .fam-name { color: rgba(240,235,224,0.45); }
+
+    /* Mode selector */
+    .mode-toggle {
+      display: flex;
+      border: 1px solid rgba(181,137,42,0.4);
+      border-radius: 2px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .mode-btn {
+      background: transparent;
+      border: none;
+      color: rgba(240,235,224,0.4);
+      font-family: 'Raleway', sans-serif;
+      font-size: 0.55rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 6px 9px;
+      cursor: pointer;
+      transition: all 0.18s;
+      line-height: 1;
+    }
+    .mode-btn + .mode-btn { border-left: 1px solid rgba(181,137,42,0.3); }
+    .mode-btn.act-repas   { background: rgba(181,137,42,0.25); color: #e8d4a0; }
+    .mode-btn.act-dessert { background: rgba(180,120,40,0.22); color: #e8c87a; }
+    .mode-btn:not(.act-repas):not(.act-dessert):hover {
+      color: rgba(240,235,224,0.7);
+      background: rgba(255,255,255,0.07);
+    }
+
+    /* Count */
+    .fam-count {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--gold-l);
+      min-width: 24px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .family-card.mode-dessert .fam-count { color: #d4a83c; }
+    .family-off .fam-count { color: rgba(240,235,224,0.3); }
+
+    .expand-arrow {
+      font-size: 0.65rem;
+      color: rgba(181,137,42,0.55);
+      transition: transform 0.25s;
+      flex-shrink: 0;
+    }
+    .family-card.collapsed .expand-arrow { transform: rotate(-90deg); }
+
+    /* ── Card body (light) */
+    .family-body {
+      padding: 13px 18px 16px;
+      background: var(--card);
+    }
+    .family-card.collapsed .family-body { display: none; }
+    .family-off .family-body { pointer-events: none; }
+
+    /* ── Group */
+    .group { margin-bottom: 11px; }
+    .group:last-child { margin-bottom: 0; }
+
+    .group-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 5px 0 7px;
+      border-bottom: 1px solid rgba(181,137,42,0.14);
+      margin-bottom: 8px;
+    }
+
+    .grp-toggle {
+      width: 26px; height: 15px;
+      background: rgba(58,107,63,0.1);
+      border: 1px solid rgba(58,107,63,0.35);
+      border-radius: 8px;
+      position: relative;
+      flex-shrink: 0;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .grp-toggle.on {
+      background: rgba(58,107,63,0.18);
+      border-color: var(--green-chip);
+    }
+    .grp-toggle::after {
+      content: '';
+      width: 10px; height: 10px;
+      background: rgba(58,107,63,0.3);
+      border-radius: 50%;
+      position: absolute;
+      top: 1.5px; left: 1.5px;
+      transition: all 0.2s;
+    }
+    .grp-toggle.on::after { left: 13px; background: var(--green-chip); }
+
+    .grp-name {
+      font-size: 0.6rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      flex: 1;
+      font-weight: 600;
+    }
+    .grp-count {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.9rem;
+      color: var(--green-chip);
+      font-weight: 600;
+      opacity: 0.85;
+    }
+    .grp-count.zero { color: var(--text-muted); opacity: 0.6; }
+
+    .members-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    /* ── Member chip */
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--parchment);
+      border: 1px solid rgba(30,28,22,0.14);
+      border-radius: 2px;
+      padding: 5px 11px;
+      cursor: pointer;
+      user-select: none;
+      font-size: 0.8rem;
+      font-weight: 400;
+      color: var(--text);
+      letter-spacing: 0.03em;
+      transition: all 0.15s;
+    }
+    .chip:hover {
+      border-color: var(--gold);
+      background: var(--gold-dim);
+      color: var(--dark);
+    }
+    .chip.absent {
+      background: rgba(30,28,22,0.03);
+      border-color: rgba(30,28,22,0.08);
+      color: var(--text-muted);
+      text-decoration: line-through;
+      opacity: 0.6;
+    }
+    .chip-dot {
+      width: 5px; height: 5px;
+      background: var(--gold);
+      border-radius: 50%;
+      opacity: 0.6;
+      flex-shrink: 0;
+    }
+    .chip.absent .chip-dot { background: var(--text-muted); opacity: 0.3; }
+
+    /* ══════════════════════════════════
+       SOLO CARD
+    ══════════════════════════════════ */
+    .solo-card {
+      background: var(--card);
+      border-radius: 3px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid rgba(30,28,22,0.07);
+      padding: 14px 18px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    /* ══════════════════════════════════
+       DESSERT ADD
+    ══════════════════════════════════ */
+    .dessert-add-card {
+      background: var(--card);
+      border-radius: 3px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid rgba(181,137,42,0.18);
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+    .dadd-header {
+      background: #2e1e0e;
+      padding: 10px 18px;
+    }
+    .dadd-header span {
+      font-size: 0.57rem;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: #d4a83c;
+      opacity: 0.8;
+    }
+    .dadd-body { padding: 14px 18px; }
+    .add-row { display: flex; gap: 8px; }
+    .add-row input[type=text] {
+      flex: 1;
+      background: var(--parchment);
+      border: 1px solid rgba(181,137,42,0.22);
+      border-radius: 2px;
+      padding: 9px 12px;
+      font-family: 'Raleway', sans-serif;
+      font-size: 0.83rem;
+      font-weight: 300;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .add-row input[type=text]::placeholder { color: var(--text-muted); }
+    .add-row input[type=text]:focus { border-color: var(--gold); }
+    .add-row input[type=number] {
+      width: 56px;
+      background: var(--parchment);
+      border: 1px solid rgba(181,137,42,0.22);
+      border-radius: 2px;
+      padding: 9px 6px;
+      font-family: 'Raleway', sans-serif;
+      font-size: 0.83rem;
+      color: var(--text);
+      text-align: center;
+      outline: none;
+    }
+    .btn-add {
+      background: var(--dark);
+      border: none;
+      border-radius: 2px;
+      color: var(--gold-l);
+      font-family: 'Raleway', sans-serif;
+      font-size: 0.58rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 9px 16px;
+      cursor: pointer;
+      transition: background 0.15s;
+      white-space: nowrap;
+    }
+    .btn-add:hover { background: var(--dark2); }
+
+    #dessert-list { display: flex; flex-wrap: wrap; gap: 7px; }
+
+    .dessert-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      background: var(--card);
+      border: 1px solid rgba(181,137,42,0.22);
+      border-radius: 2px;
+      padding: 6px 8px 6px 13px;
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      box-shadow: var(--shadow-sm);
+    }
+    .d-count {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem;
+      color: var(--gold);
+      font-weight: 600;
+      line-height: 1;
+    }
+    .d-remove {
+      background: rgba(30,28,22,0.05);
+      border: 1px solid rgba(30,28,22,0.1);
+      border-radius: 2px;
+      color: var(--text-muted);
+      cursor: pointer;
+      width: 18px; height: 18px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.85rem;
+      transition: all 0.15s;
+    }
+    .d-remove:hover { background: rgba(200,50,50,0.1); color: #c04040; border-color: rgba(200,50,50,0.25); }
+
+    /* ══════════════════════════════════
+       STICKY FOOTER (sombre)
+    ══════════════════════════════════ */
+    .sticky-footer {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: var(--dark);
+      border-top: 2px solid var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      padding: 14px 28px;
+      z-index: 100;
+      box-shadow: 0 -4px 30px rgba(0,0,0,0.25);
+    }
+
+    .t-item { text-align: center; }
+    .t-label {
+      display: block;
+      font-size: 0.53rem;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: rgba(240,235,224,0.45);
+      margin-bottom: 4px;
+    }
+    .t-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.5rem;
+      font-weight: 600;
+      line-height: 1;
+      transition: transform 0.15s, color 0.2s;
+    }
+    .t-item.meal .t-num         { color: #e8d098; }
+    .t-item.dessert-only .t-num { color: #d4a83c; }
+    .t-item.grand .t-num        { color: #f0ebe0; }
+    .t-num.bump { transform: scale(1.1); }
+
+    .t-divider {
+      width: 1px; height: 44px;
+      background: rgba(181,137,42,0.25);
+    }
+
+    /* ══════════════════════════════════
+       ANIMATION
+    ══════════════════════════════════ */
+    .family-card {
+      animation: riseIn 0.3s ease both;
+    }
+    .family-card:nth-child(2) { animation-delay: 0.05s; }
+    .family-card:nth-child(3) { animation-delay: 0.10s; }
+    .family-card:nth-child(4) { animation-delay: 0.15s; }
+
+    @keyframes riseIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ HEADER ══════════════════════════════════ -->
+<header>
+  <div class="h-ornament">
+    <div class="h-line"></div>
+    <div class="h-diamond"></div>
+    <div class="h-line r"></div>
+  </div>
+  <h1>Table d'Honneur</h1>
+  <div class="h-sub">Repas de Famille — Gestion des convives</div>
+</header>
+
+<!-- ══ CONTENT ════════════════════════════════= -->
+<div class="container">
+
+  <div class="section-label">
+    <div class="sl-badge">Familles</div>
+    <div class="sl-rule"></div>
+  </div>
+  <div id="families-container"></div>
+
+  <div class="section-label">
+    <div class="sl-badge">Invités individuels</div>
+    <div class="sl-rule"></div>
+  </div>
+  <div class="solo-card" id="solo-card"></div>
+
+  <div class="section-label ds">
+    <div class="sl-badge">Invités extérieurs — Dessert uniquement</div>
+    <div class="sl-rule"></div>
+  </div>
+  <div class="dessert-add-card">
+    <div class="dadd-header"><span>Ajouter des convives arrivant au dessert</span></div>
+    <div class="dadd-body">
+      <div class="add-row">
+        <input type="text"   id="dessert-name"  placeholder="Nom ou famille…">
+        <input type="number" id="dessert-count" min="1" max="30" value="1">
+        <button class="btn-add" onclick="addDessert()">+ Ajouter</button>
+      </div>
+    </div>
+  </div>
+  <div id="dessert-list"></div>
+
+</div>
+
+<!-- ══ FOOTER ══════════════════════════════════ -->
+<div class="sticky-footer">
+  <div class="t-item meal">
+    <span class="t-label">Repas</span>
+    <span class="t-num" id="total-meal">0</span>
+  </div>
+  <div class="t-divider"></div>
+  <div class="t-item dessert-only">
+    <span class="t-label">Dessert seul</span>
+    <span class="t-num" id="total-dessert-only">0</span>
+  </div>
+  <div class="t-divider"></div>
+  <div class="t-item grand">
+    <span class="t-label">Total dessert</span>
+    <span class="t-num" id="total-grand">0</span>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════
+// DONNÉES
+// ══════════════════════════════════════════════════
+const FAMILIES = [
+  {
+    id: 'filipetto', name: 'Famille Filipetto',
+    groups: [
+      { id: 'fil_p',  name: 'Les parents',     members: ['André', 'Martine'] },
+      { id: 'fil_a',  name: 'Famille Aurélie', members: ['Aurélie', 'Ludovic', 'Amélia', 'Lou-Anne'] },
+      { id: 'fil_v',  name: 'Famille Vanessa', members: ['Vanessa', 'Denis', 'Annaïs', 'Caroline', 'Vincent'] },
+      { id: 'fil_t',  name: 'Famille Thomas',  members: ['Thomas', 'Sonia', 'Sasha'] },
+      { id: 'fil_pl', name: 'Famille Pauline', members: ['Pauline', 'Ezioh'] },
+    ]
+  },
+  {
+    id: 'plaud', name: 'Famille Plaud',
+    groups: [
+      { id: 'pl_p',  name: 'Les parents',    members: ['Jean-Philippe', 'Chantal'] },
+      { id: 'pl_au', name: 'Famille Audrey', members: ['Audrey', 'Raphaël', 'Gabriel', 'Hugo'] },
+      { id: 'pl_al', name: 'Famille Alicia', members: ['Alicia', 'Régis', 'Chloé', 'Giulian'] },
+      { id: 'pl_an', name: 'Famille Alan',   members: ['Alan', 'Emeline', 'Helina'] },
+    ]
+  },
+  {
+    id: 'bordas', name: 'Famille Bordas',
+    groups: [
+      { id: 'bor_i', name: 'Isabelle',         members: ['Isabelle'] },
+      { id: 'bor_d', name: 'Famille Dorothée', members: ['Dorothée', 'Nicola', 'Leonnie'] },
+    ]
+  },
+  {
+    id: 'anselme', name: 'Famille Anselme',
+    groups: [
+      { id: 'ans_p', name: 'Jean-Noël & Elisabeth', members: ['Jean-Noël', 'Elisabeth'] },
+    ]
+  },
+];
+
+const SOLOS = [
+  { id: 'solo_anna', name: 'Mémé Anna' },
+  { id: 'solo_fifi', name: 'Oncle Fifi' },
+];
+
+// ══════════════════════════════════════════════════
+// ÉTAT
+// ══════════════════════════════════════════════════
+const S = {
+  fam:       {},
+  groups:    {},
+  members:   {},
+  solos:     {},
+  dessert:   [],
+  collapsed: {},
+  nextId:    1,
+};
+
+FAMILIES.forEach(f => {
+  S.fam[f.id]       = { active: true, mode: 'repas' };
+  S.collapsed[f.id] = false;
+  f.groups.forEach(g => {
+    S.groups[g.id] = { active: true };
+    g.members.forEach(m => { S.members[g.id + '::' + m] = true; });
+  });
+});
+SOLOS.forEach(s => { S.solos[s.id] = { active: true, mode: 'repas' }; });
+
+// ══════════════════════════════════════════════════
+// COMPTAGE
+// ══════════════════════════════════════════════════
+function countGroup(g) {
+  if (!S.groups[g.id].active) return 0;
+  return g.members.filter(m => S.members[g.id + '::' + m]).length;
+}
+function countFamily(f) {
+  if (!S.fam[f.id].active) return 0;
+  return f.groups.reduce((s, g) => s + countGroup(g), 0);
+}
+function totalMeal() {
+  const f = FAMILIES.filter(f => S.fam[f.id].mode === 'repas').reduce((s, f) => s + countFamily(f), 0);
+  const s = SOLOS.filter(s => S.solos[s.id].active && S.solos[s.id].mode === 'repas').length;
+  return f + s;
+}
+function totalDessertAuto() {
+  const f = FAMILIES.filter(f => S.fam[f.id].mode === 'dessert').reduce((s, f) => s + countFamily(f), 0);
+  const s = SOLOS.filter(s => S.solos[s.id].active && S.solos[s.id].mode === 'dessert').length;
+  return f + s;
+}
+function totalDessertManual() { return S.dessert.reduce((s, d) => s + d.count, 0); }
+function totalDessertOnly()   { return totalDessertAuto() + totalDessertManual(); }
+
+// ══════════════════════════════════════════════════
+// RENDU
+// ══════════════════════════════════════════════════
+function renderAll() {
+  renderFamilies();
+  renderSolos();
+  renderDessert();
+  updateTotals();
+}
+
+/* ── Families ── */
+function renderFamilies() {
+  const c = document.getElementById('families-container');
+  c.innerHTML = '';
+  FAMILIES.forEach(f => c.appendChild(makeFamilyCard(f)));
+}
+
+function makeFamilyCard(fam) {
+  const fs  = S.fam[fam.id];
+  const cnt = countFamily(fam);
+  const col = S.collapsed[fam.id];
+
+  const card = document.createElement('div');
+  card.className = 'family-card' +
+    (col       ? ' collapsed'    : '') +
+    (!fs.active? ' family-off'   : '') +
+    (fs.mode==='dessert'? ' mode-dessert' : '');
+
+  /* Header */
+  const hdr = document.createElement('div');
+  hdr.className = 'family-header';
+  hdr.innerHTML = `
+    <div class="fam-toggle ${fs.active ? 'on' : ''}" id="ft-${fam.id}"></div>
+    <span class="fam-name">${fam.name}</span>
+    <div class="mode-toggle" id="mt-${fam.id}">
+      <button class="mode-btn ${fs.mode==='repas'  ?'act-repas'  :''}" data-mode="repas">Repas</button>
+      <button class="mode-btn ${fs.mode==='dessert'?'act-dessert':''}" data-mode="dessert">Dessert</button>
+    </div>
+    <span class="fam-count">${cnt}</span>
+    <span class="expand-arrow">▾</span>
+  `;
+
+  hdr.querySelector('#ft-' + fam.id).addEventListener('click', e => {
+    e.stopPropagation();
+    S.fam[fam.id].active = !S.fam[fam.id].active;
+    renderAll();
+  });
+  hdr.querySelector('#mt-' + fam.id).addEventListener('click', e => {
+    e.stopPropagation();
+    const btn = e.target.closest('.mode-btn');
+    if (!btn) return;
+    S.fam[fam.id].mode = btn.dataset.mode;
+    renderAll();
+  });
+  hdr.addEventListener('click', e => {
+    if (e.target.closest('#ft-' + fam.id) || e.target.closest('#mt-' + fam.id)) return;
+    S.collapsed[fam.id] = !S.collapsed[fam.id];
+    renderAll();
+  });
+
+  /* Body */
+  const body = document.createElement('div');
+  body.className = 'family-body';
+  fam.groups.forEach(g => body.appendChild(makeGroupEl(g)));
+
+  card.appendChild(hdr);
+  card.appendChild(body);
+  return card;
+}
+
+function makeGroupEl(grp) {
+  const gs  = S.groups[grp.id];
+  const cnt = countGroup(grp);
+
+  const el = document.createElement('div');
+  el.className = 'group';
+
+  const hdr = document.createElement('div');
+  hdr.className = 'group-header';
+  hdr.innerHTML = `
+    <div class="grp-toggle ${gs.active ? 'on' : ''}" id="gt-${grp.id}"></div>
+    <span class="grp-name">${grp.name}</span>
+    <span class="grp-count ${cnt===0?'zero':''}">${cnt} pers.</span>
+  `;
+  hdr.querySelector('#gt-' + grp.id).addEventListener('click', () => {
+    S.groups[grp.id].active = !S.groups[grp.id].active;
+    renderAll();
+  });
+
+  const ml = document.createElement('div');
+  ml.className = 'members-list';
+  grp.members.forEach(name => {
+    const key  = grp.id + '::' + name;
+    const chip = document.createElement('div');
+    chip.className = 'chip' + (!S.members[key] ? ' absent' : '');
+    chip.innerHTML = `<span class="chip-dot"></span>${name}`;
+    chip.addEventListener('click', () => { S.members[key] = !S.members[key]; renderAll(); });
+    ml.appendChild(chip);
+  });
+
+  el.appendChild(hdr);
+  el.appendChild(ml);
+  return el;
+}
+
+/* ── Solos ── */
+function renderSolos() {
+  const c = document.getElementById('solo-card');
+  c.innerHTML = '';
+  SOLOS.forEach(s => {
+    const ss = S.solos[s.id];
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;align-items:center;gap:7px;';
+
+    const chip = document.createElement('div');
+    chip.className = 'chip' + (!ss.active ? ' absent' : '');
+    chip.innerHTML = `<span class="chip-dot"></span>${s.name}`;
+    chip.addEventListener('click', () => { S.solos[s.id].active = !S.solos[s.id].active; renderAll(); });
+
+    const mt = document.createElement('div');
+    mt.style.cssText = 'display:flex;border:1px solid rgba(30,28,22,0.15);border-radius:2px;overflow:hidden;';
+    mt.innerHTML = `
+      <button style="background:${ss.mode==='repas'?'rgba(27,42,24,0.1)':'transparent'};border:none;font-family:Raleway,sans-serif;font-size:0.54rem;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;padding:4px 7px;cursor:pointer;color:${ss.mode==='repas'?'var(--dark)':'var(--text-muted)'};" data-id="${s.id}" data-mode="repas">R</button>
+      <button style="background:${ss.mode==='dessert'?'rgba(181,137,42,0.12)':'transparent'};border:none;border-left:1px solid rgba(30,28,22,0.1);font-family:Raleway,sans-serif;font-size:0.54rem;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;padding:4px 7px;cursor:pointer;color:${ss.mode==='dessert'?'var(--gold)':'var(--text-muted)'};" data-id="${s.id}" data-mode="dessert">D</button>
+    `;
+    mt.addEventListener('click', e => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      S.solos[btn.dataset.id].mode = btn.dataset.mode;
+      renderAll();
+    });
+
+    wrap.appendChild(chip);
+    wrap.appendChild(mt);
+    c.appendChild(wrap);
+  });
+}
+
+/* ── Dessert ── */
+function renderDessert() {
+  const c = document.getElementById('dessert-list');
+  c.innerHTML = '';
+  S.dessert.forEach(d => {
+    const chip = document.createElement('div');
+    chip.className = 'dessert-chip';
+    chip.innerHTML = `
+      <span>${d.name}</span>
+      <span class="d-count">${d.count}</span>
+      <button class="d-remove" title="Supprimer">×</button>
+    `;
+    chip.querySelector('.d-remove').addEventListener('click', () => {
+      S.dessert = S.dessert.filter(x => x.id !== d.id);
+      renderAll();
+    });
+    c.appendChild(chip);
+  });
+}
+
+/* ── Totaux ── */
+function animateBump(id) {
+  const el = document.getElementById(id);
+  el.classList.remove('bump');
+  void el.offsetWidth;
+  el.classList.add('bump');
+  setTimeout(() => el.classList.remove('bump'), 180);
+}
+
+function updateTotals() {
+  const meal    = totalMeal();
+  const dessert = totalDessertOnly();
+  const grand   = meal + dessert;
+  const set = (id, val) => {
+    const el = document.getElementById(id);
+    if (el.textContent !== String(val)) { el.textContent = val; animateBump(id); }
+  };
+  set('total-meal', meal);
+  set('total-dessert-only', dessert);
+  set('total-grand', grand);
+}
+
+// ══════════════════════════════════════════════════
+// DESSERT AJOUT
+// ══════════════════════════════════════════════════
+function addDessert() {
+  const ne = document.getElementById('dessert-name');
+  const ce = document.getElementById('dessert-count');
+  const name  = ne.value.trim();
+  const count = Math.max(1, parseInt(ce.value) || 1);
+  if (!name) { ne.focus(); return; }
+  S.dessert.push({ id: S.nextId++, name, count });
+  ne.value = ''; ce.value = 1; ne.focus();
+  renderAll();
+}
+document.getElementById('dessert-name').addEventListener('keydown', e => {
+  if (e.key === 'Enter') addDessert();
+});
+
+// ══════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════
+renderAll();
+</script>
+</body>
+</html>
